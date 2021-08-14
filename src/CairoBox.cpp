@@ -63,29 +63,3 @@ void CairoBox::draw(void)
     fl_pop_clip();                          // local clip region
     fl_pop_clip();                          // "no_clip" region
 }
-
-int CairoBox::handle(int event) {
-  switch(event) {
-    case FL_PUSH:
-        printf("PUSH x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-        // redraw();
-        return 1;
-    case FL_DRAG: {
-        int t = Fl::event_inside(this);
-        if (t) {
-            printf("DRAG inside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-            // redraw();
-        } else {
-            printf("DRAG outside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-            // redraw();
-        }
-        return 1;
-    }
-    case FL_RELEASE:
-        printf("RELEASE x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-        // redraw();
-        return 1;
-    default:
-      return Fl_Widget::handle(event);
-  }
-}

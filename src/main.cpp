@@ -3,6 +3,7 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Menu_Item.H>
 #include <FL/Fl_Double_Window.H>
+#include <math.h>
 
 #include "CairoBox.h"
 
@@ -38,9 +39,41 @@ Fl_Window* new_view() {
 
 double ha = 1.0;
 
+int CairoBox::handle(int event) {
+  switch(event) {
+    case FL_PUSH:
+        printf("PUSH x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
+        // redraw();
+        return 1;
+    case FL_DRAG: {
+        int t = Fl::event_inside(this);
+        if (t) {
+            printf("DRAG inside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
+            if (Fl::event_x() > 300) {
+                ha += 0.05;
+            } else {
+                ha -= 0.05; 
+            }
+            redraw();
+        } else {
+            printf("DRAG outside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
+            // redraw();
+        }
+        return 1;
+    }
+    case FL_RELEASE:
+        printf("RELEASE x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
+        // redraw();
+        return 1;
+    default:
+      return Fl_Widget::handle(event);
+  }
+}
+
+
 void CairoBox::graphic(cairo_t* cr, double x, double y, double w, double h)  
 {
-    cairo_translate(cr, 0, 30);
+    cairo_translate(cr, 0, 30.0);
     cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
     cairo_save(cr);
 
@@ -52,12 +85,14 @@ void CairoBox::graphic(cairo_t* cr, double x, double y, double w, double h)
     //     cairo_line_to(cr, 0.0, 0.0);
     //     cairo_stroke(cr);
     // }
-    cairo_move_to(cr, 0.0, 0.0);
-    cairo_line_to(cr, 100.0 * ha, 0.0);
-    cairo_line_to(cr, 100.0 * ha, 100.0 * ha);
-    cairo_line_to(cr, 0.0, 100.0 * ha);
-    cairo_line_to(cr, 0.0, 0.0);
-    cairo_stroke(cr);
+    // cairo_move_to(cr, w / 2, (h - 30.0) / 2);
+    cairo_arc (cr, w / 2, (h - 30.0) / 2, 50.0 * ha, 0, 2*M_PI);
+    cairo_fill(cr);
+    // cairo_line_to(cr, 100.0 * ha, 0.0);
+    // cairo_line_to(cr, 100.0 * ha, 100.0 * ha);
+    // cairo_line_to(cr, 0.0, 100.0 * ha);
+    // cairo_line_to(cr, 0.0, 0.0);
+    // cairo_stroke(cr);
 
     cairo_restore(cr);
 }
