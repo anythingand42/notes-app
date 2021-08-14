@@ -7,13 +7,13 @@ TARGET      =  main
 
 VPATH = src
 
-${TARGET} : main.o CairoBox.o 
+${TARGET} : main.o CanvasBox.o 
 	g++ -g -Wall -L/opt/lib $^ ${LIBRARY}  -o $@
 
-CairoBox.o : CairoBox.cpp CairoBox.h
+CanvasBox.o : CanvasBox.cpp CanvasBox.h
 	g++ -g -Wall ${INCLUDES} -c $< -o $@
 
-main.o : main.cpp CairoBox.h
+main.o : main.cpp CanvasBox.h
 	g++ -g -Wall ${INCLUDES} -c $< -o $@
 
 clean:
