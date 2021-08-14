@@ -1,9 +1,8 @@
 #include <gtk/gtk.h>
-#include <cairo-svg.h> 
 
 /* Surface to store current scribbles */
 static cairo_surface_t *surface = NULL;
-static cairo_t *cr;
+cairo_t *cr;
 
 static void
 clear_surface (void)
@@ -32,7 +31,6 @@ resize_cb (GtkWidget *widget,
                                                    gtk_widget_get_width (widget),
                                                    gtk_widget_get_height (widget));
       cr = cairo_create (surface);
-
       /* Initialize the surface to white */
       clear_surface ();
     }
@@ -53,46 +51,8 @@ draw_cb (GtkDrawingArea *drawing_area,
   cairo_paint (cr);
 }
 
-/* Draw a rectangle on the surface at the given position */
-// static void
-// draw_brush (GtkWidget *widget,
-//             double     x,
-//             double     y)
-// {
-//   double w = gtk_widget_get_width (widget);
-//   double h = gtk_widget_get_height (widget);
-
-//   // cairo_scale(cr, 0.5, 0.5);
-//   // cairo_rectangle (cr, x - 3, y - 3, 6, 6);
-//   // cairo_fill (cr);
-//   cairo_set_source_rgb (cr, 0, 0, 0);
-//   cairo_move_to (cr, 0, 0);
-//   cairo_line_to (cr, w, h);
-//   cairo_move_to (cr, w, 0);
-//   cairo_line_to (cr, 0, h);
-//   cairo_set_line_width (cr, 0.2 * w);
-//   cairo_stroke (cr);
-
-//   cairo_rectangle (cr, 0, 0, 0.5 * w, 0.5 * h);
-//   cairo_set_source_rgba (cr, 1, 0, 0, 0.80);
-//   cairo_fill (cr);
-
-//   cairo_rectangle (cr, 0, h * 0.5, w * 0.5, h * 0.5);
-//   cairo_set_source_rgba (cr, 0, 1, 0, 0.60);
-//   cairo_fill (cr);
-
-//   cairo_rectangle (cr, w * 0.5, 0, w * 0.5, h * 0.5);
-//   cairo_set_source_rgba (cr, 0, 0, 1, 0.40);
-//   cairo_fill (cr);
-
-//   /* Now invalidate the drawing area. */
-//   gtk_widget_queue_draw (widget);
-// }
-
-// static double start_x;
-// static double start_y;
-// static double prev_x;
-// static double prev_y;
+static double start_x;
+static double start_y;
 
 static void
 drag_begin (GtkGestureDrag *gesture,
@@ -100,18 +60,15 @@ drag_begin (GtkGestureDrag *gesture,
             double          y,
             GtkWidget      *area)
 {
+  start_x = x;
+  start_y = y;
   cairo_select_font_face (cr, "serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
   cairo_set_font_size (cr, 32.0);
   cairo_set_source_rgb (cr, 0.0, 0.0, 1.0);
   cairo_move_to (cr, 10.0, 50.0);
+  cairo_translate(cr, 200.0, 200.0);
   cairo_show_text (cr, "Hello, world");
   gtk_widget_queue_draw (area);
-  cairo_surface_t * surface_svg = cairo_svg_surface_create("2.svg", 512, 512);
-  cairo_t *cr2 = cairo_create (surface_svg);
-  cairo_set_source_surface (cr2, surface, 0, 0);
-  cairo_paint (cr2);
-  cairo_destroy (cr2);
-  cairo_surface_destroy (surface_svg);
 }
 
 static void
@@ -129,7 +86,7 @@ drag_end (GtkGestureDrag *gesture,
           double          y,
           GtkWidget      *area)
 {
-  // draw_brush (area, start_x + x, start_y + y);
+
 }
 
 static void

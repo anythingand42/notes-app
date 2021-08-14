@@ -19,42 +19,41 @@ const int hpix = 175;               // height in pixels
 
 void star(cairo_t* cr, double radius)
   {
-  // double theta = 0.8*M_PI;
-  // cairo_save(cr);
-  // cairo_move_to(cr, 0.0, -radius);
-  // for(int i=0; i<5; i++)
-  //   {
-  //   cairo_rotate(cr, theta);
-  //   cairo_line_to(cr, 0.0, -radius);
-  //   }
-  // cairo_fill(cr);
-  // cairo_restore(cr);
-    cairo_save(cr);
-    cairo_select_font_face (cr, "serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size (cr, 32.0);
-    cairo_set_source_rgb (cr, 0.0, 0.0, 1.0);
-    cairo_move_to (cr, 10.0, 10.0);
-    cairo_show_text (cr, "Hello, world");
-    cairo_restore(cr);
+  double theta = 0.8*M_PI;
+  cairo_save(cr);
+  cairo_move_to(cr, 0.0, -radius);
+  for(int i=0; i<5; i++)
+    {
+    cairo_rotate(cr, theta);
+    cairo_line_to(cr, 0.0, -radius);
+    }
+  cairo_fill(cr);
+  cairo_restore(cr);
   }
   
 void CairoBox::graphic(cairo_t* cr, double x, double y, double w, double h)  
-  {
+{
   double f = 1.0/(1.0+sin(0.3*M_PI));
-  cairo_translate(cr, x+w/2, y+f*h);
+  // cairo_translate(cr, x+w/2, y+f*h);
   double radius  = f*h;
   double srink[] = {1.0, 0.95, 0.85, 0.75};
   // for(int i = 0; i<4; i++)
   //   {
-  //   if(i % 2)
-  //     cairo_set_source_rgb(cr, 0.0, 0.0, 0.5);
-  //   else
-  //     cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-  //   star(cr, srink[i]*radius);
+  //     if(i % 2)
+  //       cairo_set_source_rgb(cr, 0.0, 0.0, 0.5);
+  //     else
+  //       cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  //     star(cr, srink[i]*radius);
   //   }
-    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-    star(cr, radius);
-  }
+    cairo_save(cr);
+    cairo_move_to(cr, 0.0, 0.0);
+    cairo_line_to(cr, 100.0, 0.0);
+    cairo_line_to(cr, 100.0, 100.0);
+    cairo_line_to(cr, 0.0, 100.0);
+    cairo_line_to(cr, 0.0, 0.0);
+    cairo_stroke(cr);
+    cairo_restore(cr);
+}
 
 static void cb_Quit(Fl_Button*, void*) 
   {
