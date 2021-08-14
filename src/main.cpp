@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
@@ -9,7 +10,27 @@
 
 #include "CanvasBox.h"
 
-void new_cb(Fl_Widget*, void* v) {
+struct notes_item {
+    double x;
+    double y;
+    struct notes_item *next;
+};
+
+void notes_push(struct notes_item **phead, double x, double y)
+{
+    struct notes_item *tmp;
+    tmp = (notes_item *)malloc(sizeof(struct notes_item));
+    tmp->x = x;
+    tmp->y = y;
+    tmp->next = *phead;
+    *phead = tmp;
+}
+
+struct notes_item * notes = NULL;
+struct notes_item * cur_note = NULL;
+
+void new_cb(Fl_Widget*, void* v)
+{
   Fl_Window* e = (Fl_Window*)v;
   e->redraw();
 }
@@ -23,7 +44,8 @@ Fl_Menu_Item menuitems[] = {
 
 CanvasBox *canvas  = (CanvasBox *)0;
 
-Fl_Window* new_view() {
+Fl_Window* new_view()
+{
     Fl_Double_Window* w = new Fl_Double_Window(800, 400, "notes app");
 
     w->begin();
@@ -41,21 +63,26 @@ Fl_Window* new_view() {
 
 double ha = 1.0;
 
-int CanvasBox::handle(int event) {
+int CanvasBox::handle(int event)
+{
   switch(event) {
     case FL_PUSH:
         printf("PUSH x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-        // redraw();
+        notes_push(&notes, Fl::event_x(), Fl::event_y());
+        cur_note = notes;
+        redraw();
         return 1;
     case FL_DRAG: {
         int t = Fl::event_inside(this);
         if (t) {
             printf("DRAG inside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-            if (Fl::event_x() > 300) {
-                ha += 0.05;
-            } else {
-                ha -= 0.05; 
-            }
+            notes_push(&notes, Fl::event_x(), Fl::event_y());
+            cur_note = notes;
+            // if (Fl::event_x() > 300) {
+            //     ha += 0.05;
+            // } else {
+            //     ha -= 0.05; 
+            // }
             redraw();
         } else {
             printf("DRAG outside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
@@ -72,14 +99,25 @@ int CanvasBox::handle(int event) {
   }
 }
 
-
 void CanvasBox::graphic(double x, double y, double w, double h)  
 {
-    printf("x: %f, y: %f, w: %f, h: %f\n", x, y, w, h);
-    fl_line(x, y, w + x, h + y);
+    fl_line_style(FL_SOLID, 4);
+    if(cur_note && cur_note->next) {
+        printf("print line\n");
+        fl_line(cur_note->x, cur_note->y, cur_note->next->x, cur_note->next->y);
+    }
+    // while(cur_note) {
+    //     if (cur_note->next) {
+    //         printf("print line\n");
+    //         fl_line(cur_note->x, cur_note->y, cur_note->next->x, cur_note->next->y);
+    //     }
+    //     cur_note = cur_note->next;
+    // }
+    // fl_line(x, y, w + x, h + y);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   Fl_Window* window = new_view();
 
   window->show(1, argv);
