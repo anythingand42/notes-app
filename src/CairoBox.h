@@ -15,10 +15,12 @@
 
 class CairoBox : public Fl_Box 
 {
-    void draw(void); 
+    void draw(void);
+    int handle(int);
     cairo_t*          cr;
     cairo_surface_t*  surface;
     cairo_surface_t*  set_surface(int wo, int ho);
+
     public:
     virtual void graphic(cairo_t* cr, double, double, double, double);
     CairoBox(int x, int y, int w, int h);
