@@ -43,6 +43,7 @@ Fl_Menu_Item menuitems[] = {
 };
 
 CanvasBox *canvas  = (CanvasBox *)0;
+Fl_Offscreen oscr = 0;
 
 Fl_Window* new_view()
 {
@@ -78,6 +79,14 @@ int CanvasBox::handle(int event)
             printf("DRAG inside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
             notes_push(&notes, Fl::event_x(), Fl::event_y());
             cur_note = notes;
+            {
+                fl_begin_offscreen(oscr);
+                fl_line_style(FL_SOLID | FL_CAP_ROUND, 4);
+                fl_line(cur_note->x, cur_note->y, cur_note->next->x, cur_note->next->y);
+                // fl_color(FL_BLACK);
+                // fl_rectf(0, 0, 50, 50);
+                fl_end_offscreen();
+            }
             // if (Fl::event_x() > 300) {
             //     ha += 0.05;
             // } else {
@@ -101,11 +110,24 @@ int CanvasBox::handle(int event)
 
 void CanvasBox::graphic(double x, double y, double w, double h)  
 {
-    fl_line_style(FL_SOLID, 4);
-    if(cur_note && cur_note->next) {
-        printf("print line\n");
-        fl_line(cur_note->x, cur_note->y, cur_note->next->x, cur_note->next->y);
+    // fl_line_style(FL_SOLID, 4);
+    if (!oscr) {
+        printf("no oscr\n");
+        oscr = fl_create_offscreen(300, 300);
+        {
+            fl_begin_offscreen(oscr);
+            fl_color(FL_WHITE);
+            fl_rectf(0, 0, 300, 300);
+            fl_color(FL_BLACK);
+            fl_end_offscreen();
+        }
     }
+    printf("copy from offscreen\n");
+    fl_copy_offscreen(0, 0, 300, 300, oscr, 0, 0);
+    // if(cur_note && cur_note->next) {
+    //     printf("print line\n");
+    //     fl_line(cur_note->x, cur_note->y, cur_note->next->x, cur_note->next->y);
+    // }
     // while(cur_note) {
     //     if (cur_note->next) {
     //         printf("print line\n");
@@ -118,8 +140,8 @@ void CanvasBox::graphic(double x, double y, double w, double h)
 
 int main(int argc, char **argv)
 {
-  Fl_Window* window = new_view();
+    Fl_Window* window = new_view();
 
-  window->show(1, argv);
-  return Fl::run();
+    window->show(1, argv);
+    return Fl::run();
 }
