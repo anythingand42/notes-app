@@ -1,1 +1,2 @@
-todo: offscreen drawing https://www.fltk.org/doc-1.3/drawing.html#ssect_Offscreen
+todo: offscreen drawing https://www.fltk.org/doc-1.3/drawing.html#ssect_Offscreen - done
+todo: text-editing widget https://www.fltk.org/doc-1.3/group__fl__events.html#ga79b619b0bccac6da8cdc55e6bb8a8d52

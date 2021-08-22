@@ -10,10 +10,10 @@ VPATH = src
 ${TARGET} : main.o CanvasBox.o 
 	g++ -g -Wall -L/opt/lib $^ ${LIBRARY}  -o $@
 
-CanvasBox.o : CanvasBox.cpp CanvasBox.h
+CanvasBox.o : CanvasBox.cpp CanvasBox.hpp
 	g++ -g -Wall ${INCLUDES} -c $< -o $@
 
-main.o : main.cpp CanvasBox.h
+main.o : main.cpp CanvasBox.hpp
 	g++ -g -Wall ${INCLUDES} -c $< -o $@
 
 clean:

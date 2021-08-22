@@ -8,26 +8,7 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/fl_draw.H>
 
-#include "CanvasBox.h"
-
-struct notes_item {
-    double x;
-    double y;
-    struct notes_item *next;
-};
-
-void notes_push(struct notes_item **phead, double x, double y)
-{
-    struct notes_item *tmp;
-    tmp = (notes_item *)malloc(sizeof(struct notes_item));
-    tmp->x = x;
-    tmp->y = y;
-    tmp->next = *phead;
-    *phead = tmp;
-}
-
-struct notes_item * notes = NULL;
-struct notes_item * cur_note = NULL;
+#include "CanvasBox.hpp"
 
 void new_cb(Fl_Widget*, void* v)
 {
@@ -42,9 +23,6 @@ Fl_Menu_Item menuitems[] = {
     { 0 }
 };
 
-CanvasBox *canvas  = (CanvasBox *)0;
-Fl_Offscreen oscr = 0;
-
 Fl_Window* new_view()
 {
     Fl_Double_Window* w = new Fl_Double_Window(800, 400, "notes app");
@@ -52,7 +30,7 @@ Fl_Window* new_view()
     w->begin();
         Fl_Menu_Bar* m = new Fl_Menu_Bar(0, 0, 800, 30);
         m->copy(menuitems, w);
-        canvas = new CanvasBox(0, 30, 800, 370);
+        CanvasBox *canvas = new CanvasBox(0, 30, 800, 370);
     w->end();
 
     // canvas->box(FL_FLAT_BOX);
@@ -60,82 +38,6 @@ Fl_Window* new_view()
     w->resizable(canvas);
 
     return w;
-}
-
-double ha = 1.0;
-
-int CanvasBox::handle(int event)
-{
-  switch(event) {
-    case FL_PUSH:
-        printf("PUSH x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-        notes_push(&notes, Fl::event_x(), Fl::event_y());
-        cur_note = notes;
-        redraw();
-        return 1;
-    case FL_DRAG: {
-        int t = Fl::event_inside(this);
-        if (t) {
-            printf("DRAG inside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-            notes_push(&notes, Fl::event_x(), Fl::event_y());
-            cur_note = notes;
-            {
-                fl_begin_offscreen(oscr);
-                fl_line_style(FL_SOLID | FL_CAP_ROUND, 4);
-                fl_line(cur_note->x, cur_note->y, cur_note->next->x, cur_note->next->y);
-                // fl_color(FL_BLACK);
-                // fl_rectf(0, 0, 50, 50);
-                fl_end_offscreen();
-            }
-            // if (Fl::event_x() > 300) {
-            //     ha += 0.05;
-            // } else {
-            //     ha -= 0.05; 
-            // }
-            redraw();
-        } else {
-            printf("DRAG outside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-            // redraw();
-        }
-        return 1;
-    }
-    case FL_RELEASE:
-        printf("RELEASE x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-        // redraw();
-        return 1;
-    default:
-      return Fl_Widget::handle(event);
-  }
-}
-
-void CanvasBox::graphic(double x, double y, double w, double h)  
-{
-    // fl_line_style(FL_SOLID, 4);
-    if (!oscr) {
-        printf("no oscr\n");
-        oscr = fl_create_offscreen(300, 300);
-        {
-            fl_begin_offscreen(oscr);
-            fl_color(FL_WHITE);
-            fl_rectf(0, 0, 300, 300);
-            fl_color(FL_BLACK);
-            fl_end_offscreen();
-        }
-    }
-    printf("copy from offscreen\n");
-    fl_copy_offscreen(0, 0, 300, 300, oscr, 0, 0);
-    // if(cur_note && cur_note->next) {
-    //     printf("print line\n");
-    //     fl_line(cur_note->x, cur_note->y, cur_note->next->x, cur_note->next->y);
-    // }
-    // while(cur_note) {
-    //     if (cur_note->next) {
-    //         printf("print line\n");
-    //         fl_line(cur_note->x, cur_note->y, cur_note->next->x, cur_note->next->y);
-    //     }
-    //     cur_note = cur_note->next;
-    // }
-    // fl_line(x, y, w + x, h + y);
 }
 
 int main(int argc, char **argv)
