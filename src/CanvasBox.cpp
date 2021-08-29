@@ -6,65 +6,97 @@
 
 #include "CanvasBox.hpp"
 
-#define BUF_PX_SIZE 2000
+#define BUF_SIZE            2000
+#define FONT_HEIGHT         20
+#define FONT_WIDTH          13
+#define PATH_SIZE           3
+#define TEXT_LINE_HEIGHT    22
+#define ERASER_SIZE         30
 
-int path_prev_x, path_prev_y;
-void draw_line(Fl_Offscreen offscreen_buf)
+void CanvasBox::PathResetPosition(int x, int y)
+{
+    path_last_x = x;
+    path_last_y = y;
+}
+
+void CanvasBox::PathDrawLine()
 {
     {
         fl_begin_offscreen(offscreen_buf);
         fl_color(FL_BLACK);
-        fl_line_style(FL_SOLID | FL_CAP_ROUND, 3);
-        fl_line(path_prev_x, path_prev_y, Fl::event_x(), Fl::event_y());
+        fl_line_style(FL_SOLID | FL_CAP_ROUND, PATH_SIZE);
+        fl_line(path_last_x, path_last_y, Fl::event_x(), Fl::event_y());
         fl_end_offscreen();
     }
 }
 
-int start_text_x, start_text_y;
-int text_x, text_y;
-int enter_count = 0;
-void draw_text(Fl_Offscreen offscreen_buf)
+
+void CanvasBox::TextResetPosition(int x, int y)
+{
+    text_start_x = text_x = x;
+    text_start_y = text_y = y;
+}
+
+void CanvasBox::TextHandleDrawing()
 {
     int dx, dy, w, h, del, is_text;
     is_text = Fl::compose(del);
     if (is_text) {
         {
             fl_begin_offscreen(offscreen_buf);
-            fl_font(FL_COURIER, 20);
+            fl_font(FL_COURIER, FONT_HEIGHT);
             fl_text_extents(Fl::event_text(), dx, dy, w, h);
-            printf("dx: %i, w: %i\n", dx, w);
+            // printf("dx: %i, w: %i\n", dx, w);
             fl_color(FL_BLACK);
             fl_draw(Fl::event_text(), text_x, text_y);
             fl_end_offscreen();
         }
-        text_x += 13;
+        text_x += FONT_WIDTH;
     }
     if (Fl::event_key() == FL_BackSpace) {
-        printf("backspace\n");
         {
             fl_begin_offscreen(offscreen_buf);
             fl_color(FL_WHITE);
-            fl_rectf(text_x - 13, text_y - 16, 13, 20);
+            fl_rectf(
+                text_x - FONT_WIDTH,
+                text_y - FONT_HEIGHT + (FONT_HEIGHT / 5),   // to erase letters like "y"
+                FONT_WIDTH, FONT_HEIGHT
+            );
             fl_end_offscreen();
         }
-        text_x -= 13;
+        text_x -= FONT_WIDTH;
     }
     if (Fl::event_key() == FL_Enter) {
-        printf("enter\n");
-        text_x = start_text_x;
-        start_text_y += 20;
-        text_y = start_text_y;
+        text_x = text_start_x;
+        text_start_y += TEXT_LINE_HEIGHT;
+        text_y = text_start_y;
     }
 }
+
+void CanvasBox::EraserDraw(int x, int y)
+{
+    {
+        fl_begin_offscreen(offscreen_buf);
+        fl_color(FL_WHITE);
+        fl_rectf(
+            x - ERASER_SIZE / 2,
+            y - ERASER_SIZE / 2,
+            ERASER_SIZE,
+            ERASER_SIZE
+        );
+        fl_end_offscreen();
+    }
+}
+
 
 void CanvasBox::draw(void)
 {
     if (!offscreen_buf) {
-        offscreen_buf = fl_create_offscreen(BUF_PX_SIZE, BUF_PX_SIZE);
+        offscreen_buf = fl_create_offscreen(BUF_SIZE, BUF_SIZE);
         {
             fl_begin_offscreen(offscreen_buf);
             fl_color(FL_WHITE);
-            fl_rectf(0, 0, BUF_PX_SIZE, BUF_PX_SIZE);
+            fl_rectf(0, 0, BUF_SIZE, BUF_SIZE);
             fl_end_offscreen();
         }
     }
@@ -73,70 +105,50 @@ void CanvasBox::draw(void)
 
 int CanvasBox::handle(int event)
 {
-  switch(event) {
+    switch(event) {
         case FL_PUSH:
-            printf("PUSH x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
+            // printf("PUSH x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
             if (Fl::event_button() == FL_LEFT_MOUSE) {
-                path_prev_x = Fl::event_x();
-                path_prev_y = Fl::event_y();
+                PathResetPosition(Fl::event_x(), Fl::event_y());
             } else if (Fl::event_button() == FL_RIGHT_MOUSE) {
-                {
-                    fl_begin_offscreen(offscreen_buf);
-                    fl_color(FL_WHITE);
-                    fl_rectf(Fl::event_x() - 15, Fl::event_y() - 15, 30, 30);
-                    fl_end_offscreen();
-                }
+                EraserDraw(Fl::event_x(), Fl::event_y());
+                redraw();
             }
-            // redraw();
             return 1;
         case FL_DRAG: {
             int t = Fl::event_inside(this);
             if (t) {
-                printf("DRAG inside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
+                // printf("DRAG inside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
                 if (Fl::event_button() == FL_LEFT_MOUSE) {
-                    draw_line(offscreen_buf);
-                    path_prev_x = Fl::event_x();
-                    path_prev_y = Fl::event_y();
+                    PathDrawLine();
+                    PathResetPosition(Fl::event_x(), Fl::event_y());
                 } else if (Fl::event_button() == FL_RIGHT_MOUSE) {
-                    {
-                        fl_begin_offscreen(offscreen_buf);
-                        fl_color(FL_WHITE);
-                        fl_rectf(Fl::event_x() - 15, Fl::event_y() - 15, 30, 30);
-                        fl_end_offscreen();
-                    }
+                    EraserDraw(Fl::event_x(), Fl::event_y());
                 }
                 redraw();
             } else {
                 printf("DRAG outside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-                // redraw();
             }
             return 1;
         }
         case FL_RELEASE:
-            printf("RELEASE x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
+            // printf("RELEASE x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
             if (Fl::event_button() == FL_LEFT_MOUSE) {
-                draw_line(offscreen_buf);
+                PathDrawLine();
                 redraw();
             }
             return 1;
+        // in order to catch FL_MOVE event
         case FL_ENTER:
             return 1;
         case FL_MOVE:
-            // printf("MOVE x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
-            start_text_x = Fl::event_x();
-            start_text_y = Fl::event_y();
-            text_x = Fl::event_x();
-            text_y = Fl::event_y();
+            TextResetPosition(Fl::event_x(), Fl::event_y());
             return 1;
         case FL_SHORTCUT:
-            printf(
-                "FL_SHORTCUT event_text: %s, event_key: %d, event_x: %d, event_y: %d\n",
-                Fl::event_text(), Fl::event_key(), Fl::event_x(), Fl::event_y()
-            );
-            draw_text(offscreen_buf);
+            TextHandleDrawing();
             redraw();
             return 1;
         default:
             return Fl_Widget::handle(event);
-  }
+    }
 }
