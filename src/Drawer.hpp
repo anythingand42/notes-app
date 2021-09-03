@@ -23,7 +23,9 @@ public:
     void HandleTextInput();
 
     void HandleErase();
+
     Fl_Offscreen GetOffscreenBuf();
+    uchar* GetRGBData();
 };
 
 #endif

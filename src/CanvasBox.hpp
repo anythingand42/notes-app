@@ -7,7 +7,7 @@
 
 class CanvasBox : public Fl_Box 
 {
-    Drawer *drawer;
+    Drawer drawer;
 
     void draw();
     int handle(int);

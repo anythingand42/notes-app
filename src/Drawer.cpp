@@ -5,8 +5,10 @@
 #define TEXT_LINE_HEIGHT    22
 #define ERASER_SIZE         30
 
+#include <FL/Fl_Image.H>
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
+#include <stdio.h>
 
 #include "Drawer.hpp"
 
@@ -107,4 +109,12 @@ void Drawer::HandleErase()
         ERASER_SIZE
     );
     fl_end_offscreen();
+}
+
+uchar* Drawer::GetRGBData()
+{
+    fl_begin_offscreen(offscreen_buf);
+    uchar* rgb_data = fl_read_image(NULL, 0, 0, BUF_SIZE, BUF_SIZE);
+    fl_end_offscreen();
+    return rgb_data;
 }
