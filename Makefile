@@ -7,8 +7,11 @@ TARGET      =  main
 
 VPATH = src
 
-${TARGET} : main.o CanvasBox.o 
+${TARGET} : main.o CanvasBox.o Drawer.o
 	g++ -g -Wall -L/opt/lib $^ ${LIBRARY}  -o $@
+
+Drawer.o : Drawer.cpp Drawer.hpp
+	g++ -g -Wall ${INCLUDES} -c $< -o $@
 
 CanvasBox.o : CanvasBox.cpp CanvasBox.hpp
 	g++ -g -Wall ${INCLUDES} -c $< -o $@

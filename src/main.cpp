@@ -1,19 +1,17 @@
 #include <math.h>
 #include <stdlib.h>
-
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Menu_Item.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/fl_draw.H>
-
 #include "CanvasBox.hpp"
 
 void new_cb(Fl_Widget*, void* v)
 {
-  Fl_Window* e = (Fl_Window*)v;
-  e->redraw();
+    Fl_Window* e = (Fl_Window*)v;
+    e->redraw();
 }
 
 Fl_Menu_Item menuitems[] = {
