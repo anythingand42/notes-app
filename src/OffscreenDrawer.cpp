@@ -10,14 +10,14 @@
 #include <FL/fl_draw.H>
 #include <stdio.h>
 
-#include "Drawer.hpp"
+#include "OffscreenDrawer.hpp"
 
-Drawer::Drawer()
+OffscreenDrawer::OffscreenDrawer()
 {
     offscreen_buf = 0;
 }
 
-void Drawer::InitOffscreenBuf()
+void OffscreenDrawer::InitBuf()
 {
     offscreen_buf = fl_create_offscreen(BUF_SIZE, BUF_SIZE);
     fl_begin_offscreen(offscreen_buf);
@@ -26,18 +26,18 @@ void Drawer::InitOffscreenBuf()
     fl_end_offscreen();
 }
 
-Fl_Offscreen Drawer::GetOffscreenBuf()
+Fl_Offscreen OffscreenDrawer::GetBuf()
 {
     return offscreen_buf;
 }
 
-void Drawer::HandlePathStart()
+void OffscreenDrawer::HandlePathStart()
 {
     path_last_x = Fl::event_x();
     path_last_y = Fl::event_y();
 }
 
-void Drawer::HandlePathDraw()
+void OffscreenDrawer::HandlePathDraw()
 {
     fl_begin_offscreen(offscreen_buf);
     fl_color(FL_BLACK);
@@ -48,7 +48,7 @@ void Drawer::HandlePathDraw()
     path_last_y = Fl::event_y();
 }
 
-void Drawer::HandlePathEnd()
+void OffscreenDrawer::HandlePathEnd()
 {
     fl_begin_offscreen(offscreen_buf);
     fl_color(FL_BLACK);
@@ -57,13 +57,13 @@ void Drawer::HandlePathEnd()
     fl_end_offscreen();
 }
 
-void Drawer::HandleTextReset()
+void OffscreenDrawer::HandleTextReset()
 {
     text_start_x = text_x = Fl::event_x();
     text_start_y = text_y = Fl::event_y();
 }
 
-void Drawer::HandleTextInput()
+void OffscreenDrawer::HandleTextInput()
 {
     int dx, dy, w, h, del, is_text;
     is_text = Fl::compose(del);
@@ -98,7 +98,7 @@ void Drawer::HandleTextInput()
     }
 }
 
-void Drawer::HandleErase()
+void OffscreenDrawer::HandleErase()
 {
     fl_begin_offscreen(offscreen_buf);
     fl_color(FL_WHITE);
@@ -111,7 +111,7 @@ void Drawer::HandleErase()
     fl_end_offscreen();
 }
 
-uchar* Drawer::GetRGBData()
+uchar* OffscreenDrawer::GetRGBData()
 {
     fl_begin_offscreen(offscreen_buf);
     uchar* rgb_data = fl_read_image(NULL, 0, 0, BUF_SIZE, BUF_SIZE);

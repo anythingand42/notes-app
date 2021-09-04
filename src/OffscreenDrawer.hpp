@@ -4,7 +4,7 @@
 #include <FL/Fl_Box.H>
 #include <FL/fl_draw.H>
 
-class Drawer 
+class OffscreenDrawer 
 {
     Fl_Offscreen offscreen_buf;
     int path_last_x, path_last_y;
@@ -12,8 +12,8 @@ class Drawer
     int text_x, text_y;
 
 public:
-    Drawer();
-    void InitOffscreenBuf();
+    OffscreenDrawer();
+    void InitBuf();
 
     void HandlePathStart();
     void HandlePathDraw();
@@ -24,7 +24,7 @@ public:
 
     void HandleErase();
 
-    Fl_Offscreen GetOffscreenBuf();
+    Fl_Offscreen GetBuf();
     uchar* GetRGBData();
 };
 

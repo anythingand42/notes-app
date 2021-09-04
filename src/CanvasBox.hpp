@@ -3,11 +3,11 @@
 
 #include <FL/Fl_Box.H>
 #include <FL/fl_draw.H>
-#include "Drawer.hpp"
+#include "OffscreenDrawer.hpp"
 
 class CanvasBox : public Fl_Box 
 {
-    Drawer drawer;
+    OffscreenDrawer offscreen_drawer;
 
     void draw();
     int handle(int);

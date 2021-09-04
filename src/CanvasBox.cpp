@@ -5,16 +5,16 @@
 #include <FL/fl_draw.H>
 
 #include "CanvasBox.hpp"
-#include "Drawer.hpp"
+#include "OffscreenDrawer.hpp"
 
 CanvasBox::CanvasBox(int x, int y, int w, int h) : Fl_Box(x, y, w, h) {}
 
 void CanvasBox::draw(void)
 {
-    if (!drawer.GetOffscreenBuf()) {
-        drawer.InitOffscreenBuf();
+    if (!offscreen_drawer.GetBuf()) {
+        offscreen_drawer.InitBuf();
     }
-    fl_copy_offscreen(x(), y(), w(), h(), drawer.GetOffscreenBuf(), x(), y());
+    fl_copy_offscreen(x(), y(), w(), h(), offscreen_drawer.GetBuf(), x(), y());
 }
 
 int CanvasBox::handle(int event)
@@ -23,9 +23,9 @@ int CanvasBox::handle(int event)
         case FL_PUSH:
             // printf("PUSH x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
             if (Fl::event_button() == FL_LEFT_MOUSE) {
-                drawer.HandlePathStart();
+                offscreen_drawer.HandlePathStart();
             } else if (Fl::event_button() == FL_RIGHT_MOUSE) {
-                drawer.HandleErase();
+                offscreen_drawer.HandleErase();
                 redraw();
             }
             return 1;
@@ -34,9 +34,9 @@ int CanvasBox::handle(int event)
             if (t) {
                 // printf("DRAG inside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
                 if (Fl::event_button() == FL_LEFT_MOUSE) {
-                    drawer.HandlePathDraw();
+                    offscreen_drawer.HandlePathDraw();
                 } else if (Fl::event_button() == FL_RIGHT_MOUSE) {
-                    drawer.HandleErase();
+                    offscreen_drawer.HandleErase();
                 }
                 redraw();
             } else {
@@ -47,7 +47,7 @@ int CanvasBox::handle(int event)
         case FL_RELEASE:
             // printf("RELEASE x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
             if (Fl::event_button() == FL_LEFT_MOUSE) {
-                drawer.HandlePathEnd();
+                offscreen_drawer.HandlePathEnd();
                 redraw();
             }
             return 1;
@@ -55,10 +55,10 @@ int CanvasBox::handle(int event)
         case FL_ENTER:
             return 1;
         case FL_MOVE:
-            drawer.HandleTextReset();
+            offscreen_drawer.HandleTextReset();
             return 1;
         case FL_SHORTCUT:
-            drawer.HandleTextInput();
+            offscreen_drawer.HandleTextInput();
             redraw();
             return 1;
         default:
