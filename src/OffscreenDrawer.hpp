@@ -26,6 +26,8 @@ public:
 
     Fl_Offscreen GetBuf();
     uchar* GetRGBData();
+    int GetRGBDataSize();
+    void DrawRGBImage(uchar* rgb_data);
 };
 
 #endif

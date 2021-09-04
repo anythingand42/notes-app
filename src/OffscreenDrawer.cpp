@@ -118,3 +118,17 @@ uchar* OffscreenDrawer::GetRGBData()
     fl_end_offscreen();
     return rgb_data;
 }
+
+int OffscreenDrawer::GetRGBDataSize()
+{
+    return BUF_SIZE * BUF_SIZE * 3;
+}
+
+void OffscreenDrawer::DrawRGBImage(uchar* rgb_data)
+{
+    fl_begin_offscreen(offscreen_buf);
+    Fl_RGB_Image *img = new Fl_RGB_Image(rgb_data, BUF_SIZE, BUF_SIZE);
+    img->draw(0, 0, BUF_SIZE, BUF_SIZE);
+    delete img;
+    fl_end_offscreen();
+}

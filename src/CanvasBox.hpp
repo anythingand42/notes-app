@@ -14,6 +14,9 @@ class CanvasBox : public Fl_Box
 
 public:
     CanvasBox(int, int, int, int);
+    uchar* GetRGBData();
+    int GetRGBDataSize();
+    void DrawRGBImage(uchar*);
 };
 
 #endif

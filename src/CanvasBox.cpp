@@ -17,6 +17,22 @@ void CanvasBox::draw(void)
     fl_copy_offscreen(x(), y(), w(), h(), offscreen_drawer.GetBuf(), x(), y());
 }
 
+uchar* CanvasBox::GetRGBData()
+{
+    return offscreen_drawer.GetRGBData();
+}
+
+int CanvasBox::GetRGBDataSize()
+{
+    return offscreen_drawer.GetRGBDataSize();
+}
+
+void CanvasBox::DrawRGBImage(uchar* rgb_data)
+{
+    offscreen_drawer.DrawRGBImage(rgb_data);
+    redraw();
+}
+
 int CanvasBox::handle(int event)
 {
     switch(event) {
