@@ -1,7 +1,6 @@
-#ifndef DRAWER
-#define DRAWER
+#ifndef OFFSCREENDRAWER
+#define OFFSCREENDRAWER
 
-#include <FL/Fl_Box.H>
 #include <FL/fl_draw.H>
 
 class OffscreenDrawer 

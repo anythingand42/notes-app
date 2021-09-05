@@ -7,8 +7,11 @@ TARGET      =  main
 
 VPATH = src
 
-${TARGET} : main.o CanvasBox.o OffscreenDrawer.o
+${TARGET} : main.o CanvasBox.o OffscreenDrawer.o FileManager.o
 	g++ -g -Wall -L/opt/lib $^ ${LIBRARY}  -o $@
+
+FileManager.o : FileManager.cpp FileManager.hpp
+	g++ -g -Wall ${INCLUDES} -c $< -o $@
 
 OffscreenDrawer.o : OffscreenDrawer.cpp OffscreenDrawer.hpp
 	g++ -g -Wall ${INCLUDES} -c $< -o $@
@@ -16,7 +19,7 @@ OffscreenDrawer.o : OffscreenDrawer.cpp OffscreenDrawer.hpp
 CanvasBox.o : CanvasBox.cpp CanvasBox.hpp
 	g++ -g -Wall ${INCLUDES} -c $< -o $@
 
-main.o : main.cpp CanvasBox.hpp
+main.o : main.cpp CanvasBox.hpp FileManager.hpp
 	g++ -g -Wall ${INCLUDES} -c $< -o $@
 
 clean:

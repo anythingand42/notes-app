@@ -2,7 +2,7 @@
 #define CANVASBOX
 
 #include <FL/Fl_Box.H>
-#include <FL/fl_draw.H>
+
 #include "OffscreenDrawer.hpp"
 
 class CanvasBox : public Fl_Box 
@@ -20,4 +20,3 @@ public:
 };
 
 #endif
-

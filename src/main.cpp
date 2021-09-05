@@ -3,49 +3,27 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Menu_Item.H>
 #include <FL/Fl_Double_Window.H>
-#include <FL/fl_draw.H>
-#include <Fl/Fl_Native_File_Chooser.H>
-#include <stdio.h>
+
 #include "CanvasBox.hpp"
+#include "FileManager.hpp"
 
 CanvasBox *canvas;
+FileManager *file_manager;
 
 void open_cb(Fl_Widget*, void*)
 {
-    Fl_Native_File_Chooser fnfc;
-    long len;
-    uchar* buf;
-    fnfc.title("Open file");
-    fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-    if ( fnfc.show() ) return;
-    FILE* f = fopen(fnfc.filename(), "rb");
-    if (!f) {
-        perror(fnfc.filename());
-        return;
-    }
-    fseek(f, 0, SEEK_END);
-    len = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    buf = (uchar *)malloc(len);
+    uchar* buf = file_manager->OpenNote();
     if (buf) {
-        fread(buf, 1, len, f);
+        canvas->DrawRGBImage(buf);
     }
-    fclose(f);
-    canvas->DrawRGBImage(buf);
+    delete[] buf;
 }
 
 void save_as_cb() {
-    Fl_Native_File_Chooser fnfc;
-    fnfc.title("Save File As?");
-    fnfc.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
-    if (fnfc.show()) return;
-    FILE* f = fopen(fnfc.filename(), "wb");
-    if (!f) {
-        perror(fnfc.filename());
-        return;
-    }
-    fwrite(canvas->GetRGBData(), canvas->GetRGBDataSize(), 1, f);
-    fclose(f);
+    file_manager->SaveNote(
+        canvas->GetRGBData(),
+        canvas->GetRGBDataSize()
+    );
 }
 
 Fl_Menu_Item menuitems[] = {
@@ -75,6 +53,7 @@ Fl_Window* new_view()
 
 int main(int argc, char **argv)
 {
+    file_manager = new FileManager();
     Fl_Window* window = new_view();
 
     window->show(1, argv);

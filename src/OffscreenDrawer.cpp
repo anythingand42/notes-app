@@ -5,10 +5,9 @@
 #define TEXT_LINE_HEIGHT    22
 #define ERASER_SIZE         30
 
-#include <FL/Fl_Image.H>
 #include <FL/Fl.H>
+#include <FL/Fl_Image.H>
 #include <FL/fl_draw.H>
-#include <stdio.h>
 
 #include "OffscreenDrawer.hpp"
 

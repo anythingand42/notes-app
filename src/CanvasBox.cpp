@@ -1,8 +1,6 @@
-#include <FL/Enumerations.H>
-#include <stdio.h>
-
 #include <FL/Fl.H>
-#include <FL/fl_draw.H>
+#include <FL/Enumerations.H>
+#include <FL/Fl_Box.H>
 
 #include "CanvasBox.hpp"
 #include "OffscreenDrawer.hpp"
@@ -55,8 +53,6 @@ int CanvasBox::handle(int event)
                     offscreen_drawer.HandleErase();
                 }
                 redraw();
-            } else {
-                printf("DRAG outside x:%i, y:%i\n", Fl::event_x(), Fl::event_y());
             }
             return 1;
         }
