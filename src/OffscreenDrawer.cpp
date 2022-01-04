@@ -8,8 +8,12 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Image.H>
 #include <FL/fl_draw.H>
+#include <random>
 
 #include "OffscreenDrawer.hpp"
+
+std::default_random_engine generator;
+std::uniform_int_distribution<int> distribution(30, 230);
 
 OffscreenDrawer::OffscreenDrawer()
 {
@@ -22,6 +26,15 @@ void OffscreenDrawer::InitBuf()
     fl_begin_offscreen(offscreen_buf);
     fl_color(FL_WHITE);
     fl_rectf(0, 0, BUF_SIZE, BUF_SIZE);
+    fl_color(FL_RED);
+    // fl_line(0, 0, 50, 50);
+    int size = 4;
+    // fl_rectf(0, 30, 40, 40);
+    for (int i = 0; i < 300; i++) {
+        int x = distribution(generator);
+        int y = distribution(generator);
+        fl_rectf(x-1, y-1, size, size);
+    }
     fl_end_offscreen();
 }
 
